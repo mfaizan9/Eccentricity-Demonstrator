@@ -1,0 +1,160 @@
+/* ----------------------------------------------------------------------------
+   Eccentricity Demonstrator -- sim-specific styles only.
+   Shared palette, layout, controls, and focus handling come from
+   foundation/kl-unl.css (copied in unchanged). Everything here uses relative
+   units (rem/%/clamp) so the single panel flexes from desktop down to phone
+   portrait and stays usable at 200% zoom. The foundation files are never edited.
+---------------------------------------------------------------------------- */
+
+/* Body copy noticeably larger than the browser default, in rem so it tracks the
+   user's font setting (WCAG 1.4.4). */
+body { font-size: 1.125rem; }
+
+/* Panel heading lines up with the masthead title (which pads content by 1.25rem). */
+.panel__heading { font-size: 1.25rem; padding-left: 1.25rem; }
+
+.sim-main { display: block; }
+
+/* ---- The single panel ("1 box") ---------------------------------------------
+   Inside the one .panel, a two-column body: the ellipse diagram on the left, the
+   equation + sliders on the right -- the original Flash layout. It collapses to a
+   single stacked column on narrow / portrait widths (and at 200% zoom). */
+.sim-panel { min-width: 0; }
+
+.sim-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  padding: 0.25rem 1.25rem 1rem;
+}
+
+/* Stack the two columns below the foundation's own breakpoint, and again on very
+   narrow phones. No fixed px widths fight the collapse. */
+@media (max-width: 40rem) {
+  .sim-body {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
+
+/* ---- Left column: the ellipse diagram ---- */
+.sim-diagram-col { min-width: 0; }
+
+.sim-canvas-wrap { line-height: 0; padding: 0.5rem 0 0; }
+
+/* position:relative so the (HTML/MathJax) a / c labels can overlay the canvas. */
+.sim-canvas-stage {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+#ellipse-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--background-color, #ffffff);
+  /* No page scroll/zoom hijack on touch; no text-selection callout while using it. */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The italic variable labels a / c overlaid on the diagram, positioned in JS.
+   Centered on their anchor point. pointer-events auto so right-click reaches the
+   MathJax menu. Colors match the (accessible) arrow colors. */
+.ellipse-var-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  font-size: 1.05rem;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+.ellipse-var-label--a { color: #3538c9; }   /* matches A_COLOR in simulation.js */
+.ellipse-var-label--c { color: #cf2b2b; }   /* matches C_COLOR in simulation.js */
+/* Tint the MathJax SVG glyphs to the label color (SVG uses currentColor). */
+.ellipse-var-label mjx-container[jax="SVG"] > svg { color: inherit; }
+
+.sim-attribution {
+  margin: 0.25rem 0 0;
+  padding-left: 0.25rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.2;
+}
+.sim-attribution a { color: var(--border-bottom-color, #005a9c); }
+
+/* ---- Right column: equation + controls ---- */
+.sim-controls-col { min-width: 0; }
+
+/* Live equation above the sliders. */
+.sim-equation {
+  padding: 0.25rem 0 0.75rem;
+  text-align: center;
+  overflow-x: auto;             /* never clip; scroll if extremely narrow */
+}
+.sim-equation__math { font-size: 1.35rem; }
+
+.sim-control-body { padding: 0; }
+
+/* Slider row: variable, editable box, and slider on one line; wraps when cramped.
+   The box and the slider share a consistent look; equal-purpose boxes (a and c)
+   are the same width so their edges line up down the column. */
+.sim-slider-row {
+  display: grid;
+  grid-template-columns: 1.75rem auto 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.sim-var {
+  font-size: 1.15rem;
+  text-align: right;
+  line-height: 1;
+}
+
+.sim-numbox {
+  width: 3.75rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 1rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground-color, #1a1a1a);
+  background: var(--background-color, #ffffff);
+  border-width: var(--border-width, 1px);
+  border-style: var(--border-style, solid);
+  border-color: var(--border-color, #767676);
+  border-radius: 3px;
+}
+
+.sim-slider {
+  width: 100%;
+  min-width: 6rem;
+  min-height: 2.75rem;          /* comfortable touch target (>=44px) */
+  cursor: pointer;
+  accent-color: var(--button-background-color, #005a9c);
+}
+
+.sim-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--foreground-color, #1a1a1a);
+}
+.sim-hint em { font-style: italic; }
+
+/* On stacked (narrow) layouts, keep the diagram from getting too tall and let the
+   controls breathe. */
+@media (max-width: 40rem) {
+  .sim-canvas-stage { max-width: 22rem; }
+  .sim-equation__math { font-size: 1.2rem; }
+}
